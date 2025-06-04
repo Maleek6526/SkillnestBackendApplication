@@ -284,7 +284,7 @@ class UserServiceImplTest {
     void handleGoogleLogin_ShouldThrowExceptionWhenEmailIsNull() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> userService.handleGoogleLogin(null, validName)
+                () -> userService.handleGoogleLogin(null, validName, "JOBSEEKER")
         );
 
         assertEquals("PendingUser cannot be empty", exception.getMessage());
@@ -296,7 +296,7 @@ class UserServiceImplTest {
     void handleGoogleLogin_ShouldThrowExceptionWhenEmailIsEmpty() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> userService.handleGoogleLogin("", validName)
+                () -> userService.handleGoogleLogin("", validName, "JOBSEEKER")
         );
 
         assertEquals("PendingUser cannot be empty", exception.getMessage());
@@ -308,7 +308,7 @@ class UserServiceImplTest {
     void handleGoogleLogin_ShouldThrowExceptionWhenNameIsNull() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> userService.handleGoogleLogin(validEmail, null)
+                () -> userService.handleGoogleLogin(validEmail, null, "JOBSEEKER")
         );
 
         assertEquals("Name cannot be empty", exception.getMessage());
@@ -321,7 +321,7 @@ class UserServiceImplTest {
 
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> userService.handleGoogleLogin(validEmail, "")
+                () -> userService.handleGoogleLogin(validEmail, "", "JOBSEEKER")
         );
 
         assertEquals("Name cannot be empty", exception.getMessage());
@@ -340,7 +340,7 @@ class UserServiceImplTest {
 
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
-                () -> userService.handleGoogleLogin(validEmail, validName)
+                () -> userService.handleGoogleLogin(validEmail, validName, "JOBSEEKER")
         );
 
         assertEquals("PendingUser is registered with a password-based account. Please use password login.",
@@ -361,7 +361,7 @@ class UserServiceImplTest {
         mockResponse.setToken(jwtToken);
         mockResponse.setMessage("Login was successful");
 
-        LoginResponse result = userService.handleGoogleLogin(validEmail, validName);
+        LoginResponse result = userService.handleGoogleLogin(validEmail, validName, "JOBSEEKER");
 
 
         assertNotNull(result);
@@ -379,7 +379,7 @@ class UserServiceImplTest {
         when(userRepository.save(any(User.class))).thenReturn(newGoogleUser);
         when(jwtTokenUtil.generateToken(any(User.class))).thenReturn(jwtToken);
 
-        LoginResponse result = userService.handleGoogleLogin(validEmail, validName);
+        LoginResponse result = userService.handleGoogleLogin(validEmail, validName, "JOBSEEKER");
 
         assertNotNull(result);
 
@@ -406,7 +406,7 @@ class UserServiceImplTest {
         when(userRepository.findByEmail(validEmail)).thenReturn(Optional.of(existingGoogleUser));
         when(jwtTokenUtil.generateToken(existingGoogleUser)).thenReturn(jwtToken);
 
-        userService.handleGoogleLogin(validEmail, validName);
+        userService.handleGoogleLogin(validEmail, validName, "JOBSEEKER");
 
         assertFalse(existingGoogleUser.isActive());
     }

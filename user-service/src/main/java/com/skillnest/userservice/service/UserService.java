@@ -1,5 +1,6 @@
 package com.skillnest.userservice.service;
 
+import com.skillnest.userservice.data.enums.Role;
 import com.skillnest.userservice.dtos.request.*;
 import com.skillnest.userservice.dtos.request.CreateUserRequest;
 import com.skillnest.userservice.dtos.response.*;
@@ -15,7 +16,7 @@ public interface UserService {
     UpdateUserProfileResponse updateProfile(UpdateUserProfileRequest updateUserProfileRequest);
     ResetPasswordResponse resetPassword(ChangePasswordRequest changePasswordRequest);
     ResetPasswordResponse sendResetOtp(ResetPasswordRequest resetPasswordRequest);
-    LoginResponse handleGoogleLogin(String email, String name);
+    LoginResponse handleGoogleLogin(String email, String name, String role);
 
     FoundResponse findUserById(String id);
 }

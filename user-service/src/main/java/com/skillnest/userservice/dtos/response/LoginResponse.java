@@ -1,5 +1,6 @@
 package com.skillnest.userservice.dtos.response;
 
+import com.skillnest.userservice.data.enums.Role;
 import com.skillnest.userservice.data.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
