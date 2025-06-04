@@ -193,6 +193,7 @@ public class UserServiceImpl implements UserService{
         otp.setExpiresAt(LocalDateTime.now().plusMinutes(30));
         otpRepository.save(otp);
         emailService.sendResetPasswordEmail(resetPasswordRequest.getEmail(), otp.getOtp());
+        System.out.println(otp);
         return UserMapper.mapToResetPasswordResponse("PendingUser sent Successfully", otp.getOtp());
     }
     @Override
