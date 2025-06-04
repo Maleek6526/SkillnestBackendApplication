@@ -46,6 +46,8 @@ public class UserMapper {
         loginResponse.setToken(jwtToken);
         loginResponse.setMessage(message);
         loginResponse.setUser(user);
+        System.out.println(user.getRole());
+        System.out.println(user.isGoogleUser());
         return loginResponse;
     }
     public static ResetPasswordResponse mapToResetPasswordResponse(String message, String otp){

@@ -2,6 +2,8 @@ package com.skillnest.userservice.controller;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.skillnest.userservice.data.enums.Role;
+import org.springframework.http.*;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.skillnest.userservice.data.model.User;
@@ -14,13 +16,13 @@ import com.skillnest.userservice.exception.*;
 import com.skillnest.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -30,6 +32,7 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
     private final UserRepository userRepository;
+    private final RestTemplate restTemplate;
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String googleClientId;
 
@@ -141,38 +144,43 @@ public class UserController {
     @PostMapping("/google")
     public ResponseEntity<LoginResponse> googleLogin(@RequestBody GoogleLoginRequest request) {
         try {
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-                    .setAudience(Collections.singletonList(googleClientId))
-                    .build();
+            String accessToken = request.getToken();
+            String role = request.getRole();
 
-            GoogleIdToken idToken = verifier.verify(request.getToken());
-            if (idToken == null) {
-                throw new IllegalArgumentException("Invalid Google ID token");
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(accessToken);
+
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<Map> googleResponse = restTemplate.exchange(
+                    "https://www.googleapis.com/oauth2/v3/userinfo",
+                    HttpMethod.GET,
+                    entity,
+                    Map.class
+            );
+
+            if (!googleResponse.getStatusCode().is2xxSuccessful()) {
+                throw new IllegalArgumentException("Invalid Google access token");
             }
 
-            GoogleIdToken.Payload payload = idToken.getPayload();
-            String email = payload.getEmail();
-            String name = (String) payload.get("name");
+            Map<String, Object> userInfo = googleResponse.getBody();
+            String email = (String) userInfo.get("email");
+            String name = (String) userInfo.get("name");
 
-            if (Objects.isNull(email) || email.isEmpty()) {
-                throw new IllegalArgumentException("Google authentication failed: Email not provided");
-            }
-            if (Objects.isNull(name) || name.isEmpty()) {
-                throw new IllegalArgumentException("Google authentication failed: Name not provided");
+            if (email == null || name == null) {
+                throw new IllegalArgumentException("Failed to get user info from Google");
             }
 
-            LoginResponse response = userService.handleGoogleLogin(email, name);
-            return ResponseEntity.ok(response);
+            LoginResponse loginResponse = userService.handleGoogleLogin(email, name, role);
+            return ResponseEntity.ok(loginResponse);
 
         } catch (IllegalArgumentException e) {
-            LoginResponse errorResponse = new LoginResponse(null, null, e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-        } catch (IllegalStateException e) {
-            LoginResponse errorResponse = new LoginResponse(null, null, e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+            return ResponseEntity.badRequest().body(new LoginResponse(null, null, e.getMessage()));
         } catch (Exception e) {
-            LoginResponse errorResponse = new LoginResponse(null, null, "Internal server error during Google authentication");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new LoginResponse(null, null, "Internal server error"));
         }
     }
+
 }

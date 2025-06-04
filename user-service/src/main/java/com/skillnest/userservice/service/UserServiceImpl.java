@@ -1,6 +1,7 @@
 package com.skillnest.userservice.service;
 
 import com.cloudinary.Cloudinary;
+import com.skillnest.userservice.data.enums.Role;
 import com.skillnest.userservice.data.model.PendingUser;
 import com.skillnest.userservice.data.model.OTP;
 import com.skillnest.userservice.data.model.User;
@@ -205,13 +206,19 @@ public class UserServiceImpl implements UserService{
         return UserMapper.mapToFoundResponse("User found", user.get().getId());
     }
     @Override
-    public LoginResponse handleGoogleLogin(String email, String name) {
+    public LoginResponse handleGoogleLogin(String email, String name, String roleStr) {
+
         if (email == null || email.isEmpty()) {
             throw new IllegalArgumentException("PendingUser cannot be empty");
         }
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Name cannot be empty");
         }
+        if (roleStr == null) {
+            throw new IllegalArgumentException("Role cannot be null");
+        }
+
+        Role role = Role.valueOf(roleStr);;
 
         Optional<User> userOpt = userRepository.findByEmail(email);
         User user;
@@ -224,16 +231,17 @@ public class UserServiceImpl implements UserService{
             user = new User();
             user.setEmail(email);
             user.setFullName(name);
+            user.setRole(role);
             user.setGoogleUser(true);
             user.setActive(true);
             user = userRepository.save(user);
             System.out.println(user);
         }
 
-
         var jwtToken = jwtTokenUtil.generateToken(user);
         return UserMapper.mapToLoginResponse(jwtToken, "Login was successful", user);
     }
+
     private void validateEmail(String email) {
         Optional<User> foundUser = userRepository.findByEmail(email);
         if (foundUser.isPresent()) {
