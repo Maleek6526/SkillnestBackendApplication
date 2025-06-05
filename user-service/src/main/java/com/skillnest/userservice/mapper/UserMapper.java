@@ -50,10 +50,11 @@ public class UserMapper {
         System.out.println(user.isGoogleUser());
         return loginResponse;
     }
-    public static ResetPasswordResponse mapToResetPasswordResponse(String message, String otp){
+    public static ResetPasswordResponse mapToResetPasswordResponse(String message, String otp, String email) {
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
         resetPasswordResponse.setMessage(message);
         resetPasswordResponse.setOtp(otp);
+        resetPasswordResponse.setEmail(email);
         return resetPasswordResponse;
     }
     public static UploadResponse mapToUploadResponse(String message, String cloudinaryUrl){

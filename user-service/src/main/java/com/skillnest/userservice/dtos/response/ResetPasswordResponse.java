@@ -8,5 +8,5 @@ import lombok.Setter;
 public class ResetPasswordResponse {
     private String message;
     private String otp;
-
+    private String email;
 }

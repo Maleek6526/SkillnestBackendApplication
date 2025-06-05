@@ -128,6 +128,9 @@ public class UserServiceImpl implements UserService{
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
             throw new InvalidPasswordException("Invalid password");
         }
+        if(loginRequest.getRole() != null && !loginRequest.getRole().equals(user.getRole())) {
+            throw new InvalidRoleException("Invalid role for user");
+        }
         user.setActive(true);
         var jwtToken = jwtTokenUtil.generateToken(user);
         return UserMapper.mapToLoginResponse(jwtToken, "Login was successful", user);
@@ -179,7 +182,7 @@ public class UserServiceImpl implements UserService{
         userRepository.save(user);
 
         otpRepository.delete(otp);
-        return UserMapper.mapToResetPasswordResponse("Password reset successful", otp.getOtp());
+        return UserMapper.mapToResetPasswordResponse("Password reset successful", otp.getOtp(), changePasswordRequest.getEmail());
     }
     @Override
     public ResetPasswordResponse sendResetOtp(ResetPasswordRequest resetPasswordRequest){
@@ -195,7 +198,7 @@ public class UserServiceImpl implements UserService{
         otpRepository.save(otp);
         emailService.sendResetPasswordEmail(resetPasswordRequest.getEmail(), otp.getOtp());
         System.out.println(otp);
-        return UserMapper.mapToResetPasswordResponse("PendingUser sent Successfully", otp.getOtp());
+        return UserMapper.mapToResetPasswordResponse("PendingUser sent Successfully", otp.getOtp(), resetPasswordRequest.getEmail());
     }
     @Override
     public FoundResponse findUserById(String id){
