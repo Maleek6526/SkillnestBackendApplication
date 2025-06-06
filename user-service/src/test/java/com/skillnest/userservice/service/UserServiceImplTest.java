@@ -77,7 +77,6 @@ class UserServiceImplTest {
     private PendingUser pendingUser;
     private OTP otp;
 
-    // Google login test data
     private User existingGoogleUser;
     private User newGoogleUser;
     private LoginResponse expectedGoogleResponse;

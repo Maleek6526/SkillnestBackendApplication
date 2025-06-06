@@ -23,4 +23,8 @@ public interface JobService {
     JobResponse changeJobStatus(ChangeJobStatusRequest jobRequest);
 
     JobResponse negotiatedPayment(NegotiatedPaymentRequest jobRequest);
+
+    JobResponse verifyCompletion(VerifyCompleteJobRequest jobRequest);
+
+    JobResponse completeJob(CompleteJobRequest jobRequest);
 }
