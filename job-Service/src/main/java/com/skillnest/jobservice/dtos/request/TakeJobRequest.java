@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class WorkImageRequest {
+public class TakeJobRequest {
+    private String jobId;
     private String jobSeekerId;
-    private String caption;
 }

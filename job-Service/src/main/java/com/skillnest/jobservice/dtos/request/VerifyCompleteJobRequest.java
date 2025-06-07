@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class WorkImageRequest {
-    private String jobSeekerId;
-    private String caption;
+public class VerifyCompleteJobRequest {
+    private String jobId;
+    private String userId;
+    private boolean isJobSeeker;
 }
