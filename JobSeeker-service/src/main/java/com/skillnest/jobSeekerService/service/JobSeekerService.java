@@ -13,12 +13,8 @@ public interface JobSeekerService {
     UpdateJobSeekerProfileResponse getProfile(String id);
 
     UploadDocumentsResponse uploadDocuments(VerificationDocumentRequest documents);
-
     AvailabilitySlotResponse setAvailability(List<AvailabilitySlotRequest> slots);
-
     VerificationDocumentResponse getDocuments(String jobSeekerId);
-
     List<AvailabilitySlotResponse> getAvailability(String jobSeekerId);
-
-
+    TakeJobResponse takeJob(TakeJobRequest request);
 }

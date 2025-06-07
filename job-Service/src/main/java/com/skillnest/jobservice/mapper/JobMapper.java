@@ -39,7 +39,6 @@ public class JobMapper {
         job.setRequiredSkills(jobRequest.getRequiredSkills());
         job.setProposedPayment(jobRequest.getProposedPayment());
         job.setStatus(jobRequest.getStatus());
-        job.setWorkImage(jobRequest.getWorkImage());
         job.setDeadline(jobRequest.getDeadline());
         job.setLastUpdatedDate(LocalDateTime.now());
         job.setContactInfo(jobRequest.getContactInfo());

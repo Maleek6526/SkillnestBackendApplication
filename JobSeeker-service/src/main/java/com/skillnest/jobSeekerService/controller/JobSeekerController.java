@@ -31,33 +31,20 @@ public class JobSeekerController {
     public ResponseEntity<AvailabilitySlotResponse> setAvailability(@RequestBody List<AvailabilitySlotRequest> request){
         return ResponseEntity.ok(jobSeekerService.setAvailability(request));
     }
-    @PostMapping("set-bank-account")
-    public ResponseEntity<BankAccountResponse> setBankAccount(@RequestBody BankAccountRequest request){
-        return ResponseEntity.ok(jobSeekerService.setBankAccount(request));
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<BankAccountResponse> getBankAccount(@PathVariable String id){
-        return ResponseEntity.ok(jobSeekerService.getBankAccount(id));
-    }
     @PostMapping("upload-documents")
     public ResponseEntity<UploadDocumentsResponse> uploadDocuments(@RequestBody VerificationDocumentRequest request){
         return ResponseEntity.ok(jobSeekerService.uploadDocuments(request));
     }
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/documents")
     public ResponseEntity<VerificationDocumentResponse> getDocuments(@PathVariable String id){
         return ResponseEntity.ok(jobSeekerService.getDocuments(id));
     }
-    @PostMapping("upload-work-images")
-    public ResponseEntity<WorkImageResponse> uploadWorkImages(@RequestBody List<WorkImageRequest> requests){
-        return ResponseEntity.ok(jobSeekerService.uploadWorkImages(requests));
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<List<WorkImageResponse>> getWorkImages(@PathVariable String id){
-        return ResponseEntity.ok(jobSeekerService.getWorkImages(id));
-    }
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/availability")
     public ResponseEntity<List<AvailabilitySlotResponse>> getAvailability(@PathVariable String id){
         return ResponseEntity.ok(jobSeekerService.getAvailability(id));
     }
-
+    @PostMapping("take")
+    public ResponseEntity<TakeJobResponse> takeJob(@RequestBody TakeJobRequest request){
+        return ResponseEntity.ok(jobSeekerService.takeJob(request));
+    }
 }
