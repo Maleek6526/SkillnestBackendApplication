@@ -8,5 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("employer")
 @Builder
 public class Employer {
+    private String id;
+    private String companyName;
+    private String companyDescription;
     
 }

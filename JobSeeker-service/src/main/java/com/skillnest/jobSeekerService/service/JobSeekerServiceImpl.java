@@ -9,6 +9,7 @@ import com.skillnest.jobSeekerService.dtos.response.*;
 import com.skillnest.jobSeekerService.exception.JobSeekerNotFoundException;
 import com.skillnest.jobSeekerService.exception.NoDocumentFoundException;
 import com.skillnest.jobSeekerService.exception.NoImageFoundException;
+import com.skillnest.jobSeekerService.feign.JobSeekerInterface;
 import com.skillnest.jobSeekerService.mapper.JobSeekerMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,19 +26,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JobSeekerServiceImpl implements JobSeekerService{
 
+    private JobSeekerInterface jobSeekerInterface;
+
     private static final String JOB_SERVICE_BASE_URL = "http://localhost:8070/job-service";
     private final RestTemplate restTemplate;
     private final JobSeekerRepository jobSeekerRepository;
     private final Cloudinary cloudinary;
-    private static final String USER_SERVICE_URL = "http://localhost:8080/api/skill-nest/auth/users";
     private final VerificationDocumentRepository verificationDocumentRepository;
     private final AvailabilitySlotRepository availabilitySlotRepository;
 
     @Override
     public RegisterJobSeekerResponse completeProfile(RegisterJobSeekerRequest registerJobSeekerRequest){
-        String url = USER_SERVICE_URL + registerJobSeekerRequest.getUserId();
-
-        ResponseEntity<UserDto> response = restTemplate.getForEntity(url, UserDto.class);
+        ResponseEntity<UserDto> response = jobSeekerInterface.findUserById(registerJobSeekerRequest.getUserId());
         UserDto user = response.getBody();
         if(user == null){
             throw new JobSeekerNotFoundException("Job seeker not found");

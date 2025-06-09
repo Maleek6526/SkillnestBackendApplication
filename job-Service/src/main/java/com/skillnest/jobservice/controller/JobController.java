@@ -18,7 +18,7 @@ public class JobController {
     private final JobService jobService;
 
     @PostMapping("post-jobs")
-    public ResponseEntity<JobResponse> postJob(@Valid @RequestBody JobRequest jobRequest) {
+    public ResponseEntity<JobResponse> postJob(@ModelAttribute JobRequest jobRequest) {
         JobResponse response = jobService.postJobs(jobRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -36,13 +36,13 @@ public class JobController {
     }
 
     @PatchMapping("/take")
-    public ResponseEntity<JobResponse> takeJob(@Valid @RequestBody TakeJobRequest takeJobRequest) {
+    public ResponseEntity<JobResponse> takeJob(@RequestBody TakeJobRequest takeJobRequest) {
         JobResponse response = jobService.takeJob(takeJobRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PutMapping
-    public ResponseEntity<JobResponse> updateJob(@Valid @RequestBody UpdateJobRequest updateJobRequest) {
+    public ResponseEntity<JobResponse> updateJob(@RequestBody UpdateJobRequest updateJobRequest) {
         JobResponse response = jobService.updateJob(updateJobRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -54,13 +54,13 @@ public class JobController {
     }
 
     @PatchMapping("/status")
-    public ResponseEntity<JobResponse> changeJobStatus(@Valid @RequestBody ChangeJobStatusRequest changeJobStatusRequest) {
+    public ResponseEntity<JobResponse> changeJobStatus(@RequestBody ChangeJobStatusRequest changeJobStatusRequest) {
         JobResponse response = jobService.changeJobStatus(changeJobStatusRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PatchMapping("/negotiate-payment")
-    public ResponseEntity<JobResponse> negotiatePayment(@Valid @RequestBody NegotiatedPaymentRequest negotiatedPaymentRequest) {
+    public ResponseEntity<JobResponse> negotiatePayment(@RequestBody NegotiatedPaymentRequest negotiatedPaymentRequest) {
         JobResponse response = jobService.negotiatedPayment(negotiatedPaymentRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
