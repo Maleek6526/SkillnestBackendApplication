@@ -176,6 +176,8 @@ public class UserController {
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new LoginResponse(null, null, e.getMessage()));
+        } catch (IllegalStateException e){
+            return ResponseEntity.badRequest().body(new LoginResponse(null, null, e.getMessage()));
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

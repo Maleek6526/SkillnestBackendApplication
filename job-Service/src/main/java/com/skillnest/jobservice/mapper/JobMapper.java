@@ -2,6 +2,7 @@ package com.skillnest.jobservice.mapper;
 
 
 import com.skillnest.jobservice.data.model.Job;
+import com.skillnest.jobservice.data.model.WorkImage;
 import com.skillnest.jobservice.dtos.request.JobRequest;
 import com.skillnest.jobservice.dtos.request.UpdateJobRequest;
 import com.skillnest.jobservice.dtos.response.JobResponse;
@@ -39,7 +40,7 @@ public class JobMapper {
         job.setRequiredSkills(jobRequest.getRequiredSkills());
         job.setProposedPayment(jobRequest.getProposedPayment());
         job.setStatus(jobRequest.getStatus());
-        job.setWorkImage(jobRequest.getWorkImage());
+        job.setWorkImage((WorkImage) jobRequest.getWorkImage());
         job.setDeadline(jobRequest.getDeadline());
         job.setLastUpdatedDate(LocalDateTime.now());
         job.setContactInfo(jobRequest.getContactInfo());
