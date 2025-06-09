@@ -62,21 +62,6 @@ public class JobSeekerMapper {
         response.setMessage(message);
         return response;
     }
-    public static String mapToBankAccount(String jobSeekerId, BankAccountRequest request){
-        BankAccount account = new BankAccount();
-        account.setJobSeekerId(jobSeekerId);
-        account.setAccountName(request.getAccountName());
-        account.setId(UUID.randomUUID().toString());
-        account.setBankName(request.getBankName());
-        account.setAccountNumber(request.getAccountNumber());
-        return account.getId();
-    }
-    public static BankAccountResponse mapToBankAccountResponse(String message, BankAccount bankAccount){
-        BankAccountResponse response = new BankAccountResponse();
-        response.setBankAccount(bankAccount);
-        response.setMessage(message);
-        return response;
-    }
     public static VerificationDocument mapToVerificationDocument(String jobSeekerId, VerificationDocumentRequest request){
         VerificationDocument verificationDocument = new VerificationDocument();
         verificationDocument.setId(UUID.randomUUID().toString());
@@ -91,13 +76,7 @@ public class JobSeekerMapper {
         response.setMessage(message);
         return response;
     }
-    public static WorkImageResponse mapToWorkImageResponse(String message, String cloudinaryUrl){
-        WorkImageResponse workImageResponse = new WorkImageResponse();
-        workImageResponse.setMessage(message);
-        workImageResponse.setCloudinaryUrl(cloudinaryUrl);
-        return workImageResponse;
 
-    }
 
     public static UploadDocumentsResponse mapToUploadDocumentResponse(String message, VerificationDocument verificationDocument) {
         UploadDocumentsResponse response = new UploadDocumentsResponse();

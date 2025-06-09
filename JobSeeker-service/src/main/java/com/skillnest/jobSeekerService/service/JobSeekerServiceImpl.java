@@ -9,10 +9,13 @@ import com.skillnest.jobSeekerService.dtos.response.*;
 import com.skillnest.jobSeekerService.exception.JobSeekerNotFoundException;
 import com.skillnest.jobSeekerService.exception.NoDocumentFoundException;
 import com.skillnest.jobSeekerService.exception.NoImageFoundException;
+import com.skillnest.jobSeekerService.feign.JobSeekerInterface;
 import com.skillnest.jobSeekerService.mapper.JobSeekerMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -23,19 +26,18 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JobSeekerServiceImpl implements JobSeekerService{
 
+    private JobSeekerInterface jobSeekerInterface;
+
+    private static final String JOB_SERVICE_BASE_URL = "http://localhost:8070/job-service";
     private final RestTemplate restTemplate;
     private final JobSeekerRepository jobSeekerRepository;
     private final Cloudinary cloudinary;
-    private static final String USER_SERVICE_URL = "http://localhost:8080/user";
-    private static final String JOB_SERVICE_URL = "http://localhost:";
     private final VerificationDocumentRepository verificationDocumentRepository;
     private final AvailabilitySlotRepository availabilitySlotRepository;
 
     @Override
     public RegisterJobSeekerResponse completeProfile(RegisterJobSeekerRequest registerJobSeekerRequest){
-        String url = USER_SERVICE_URL + registerJobSeekerRequest.getUserId();
-
-        ResponseEntity<UserDto> response = restTemplate.getForEntity(url, UserDto.class);
+        ResponseEntity<UserDto> response = jobSeekerInterface.findUserById(registerJobSeekerRequest.getUserId());
         UserDto user = response.getBody();
         if(user == null){
             throw new JobSeekerNotFoundException("Job seeker not found");
@@ -145,6 +147,40 @@ public class JobSeekerServiceImpl implements JobSeekerService{
             return JobSeekerMapper.mapToUploadDocumentResponse("Uploaded successfully", verificationDocument);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public TakeJobResponse takeJob(TakeJobRequest request) {
+        Optional<JobSeeker> existingJobSeeker = jobSeekerRepository.findById(request.getJobSeekerId());
+        if (existingJobSeeker.isEmpty()) {
+            throw new JobSeekerNotFoundException("Job seeker not found");
+        }
+        
+        String jobServiceUrl = JOB_SERVICE_BASE_URL + "/take";
+
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(jobServiceUrl, request, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                TakeJobResponse takeJobResponse = new TakeJobResponse();
+                takeJobResponse.setMessage("Job taken successfully by job seeker: " + request.getJobSeekerId());
+                takeJobResponse.setJobId(request.getJobId());
+                takeJobResponse.setJobSeekerId(request.getJobSeekerId());
+                return takeJobResponse;
+            } else {
+                throw new RuntimeException("Failed to take job. Job Service responded with status: " + response.getStatusCode());
+            }
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new RuntimeException("Job not found in Job Service or endpoint invalid.");
+            } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
+                throw new RuntimeException("Invalid request to Job Service: " + e.getResponseBodyAsString());
+            } else {
+                throw new RuntimeException("Error communicating with Job Service: " + e.getMessage(), e);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("An unexpected error occurred while trying to take the job: " + e.getMessage(), e);
         }
     }
 
