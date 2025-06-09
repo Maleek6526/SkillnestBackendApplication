@@ -7,12 +7,17 @@ import com.skillnest.jobservice.dtos.request.*;
 import com.skillnest.jobservice.dtos.response.JobResponse;
 import com.skillnest.jobservice.exception.JobNotFoundException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,12 +32,25 @@ class JobServiceImplTest {
     @Autowired
     private JobService jobService;
 
+    @Autowired
+    private WorkImageService workImageService;
 
+    MockMultipartFile mockFile;
+
+
+    @BeforeEach
+    public void setUp() throws IOException {
+        byte[] imageBytes = Files.readAllBytes(Paths.get("src/test/resources/test-image.png"));
+        mockFile = new MockMultipartFile("image", "test-image.jpg", "image/jpeg", imageBytes);
+
+
+    }
     @Test
     void postJobs_shouldSaveAndReturnJobResponse() {
         JobRequest request = new JobRequest();
         request.setJobType("plumbing");
         request.setTitle("lum");
+        request.setJobImages(mockFile);
 
         JobResponse response = jobService.postJobs(request);
         assertNotNull(response);
@@ -44,10 +62,14 @@ class JobServiceImplTest {
         JobRequest request = new JobRequest();
         request.setJobType("plumbing");
         request.setTitle("lum");
+        request.setJobImages(mockFile);
+
 
         JobRequest request2 = new JobRequest();
         request2.setJobType("plumbing");
         request2.setTitle("lum1");
+        request2.setJobImages(mockFile);
+
 
         JobResponse response2 = jobService.postJobs(request2);
         JobResponse response = jobService.postJobs(request);
@@ -64,6 +86,8 @@ class JobServiceImplTest {
         JobRequest request = new JobRequest();
         request.setJobType("plumbing");
         request.setTitle("lum");
+        request.setJobImages(mockFile);
+
 
         JobResponse response = jobService.postJobs(request);
         JobResponse response2 = jobService.getJobById(response.getJob().getId());
@@ -74,7 +98,7 @@ class JobServiceImplTest {
 
     @Test
     void getJobById_shouldThrowExceptionIfNotFound() {
-       assertThrows(JobNotFoundException.class, () -> jobService.getJobById("1"));
+        assertThrows(JobNotFoundException.class, () -> jobService.getJobById("1"));
     }
 
     @Test
@@ -82,6 +106,8 @@ class JobServiceImplTest {
         JobRequest request2 = new JobRequest();
         request2.setJobType("plumbing");
         request2.setTitle("lum");
+        request2.setJobImages(mockFile);
+
 
         JobResponse response1 = jobService.postJobs(request2);
         TakeJobRequest request = new TakeJobRequest();
@@ -98,12 +124,15 @@ class JobServiceImplTest {
         JobRequest request1 = new JobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
+        request1.setJobImages(mockFile);
+
 
         JobResponse response1 = jobService.postJobs(request1);
 
         UpdateJobRequest request = new UpdateJobRequest();
         request.setJobId(response1.getJob().getId());
         request.setTitle("updated");
+        request.setWorkImage(mockFile);
 
         JobResponse response = jobService.updateJob(request);
 
@@ -115,6 +144,8 @@ class JobServiceImplTest {
         JobRequest request = new JobRequest();
         request.setJobType("plumbing");
         request.setTitle("lum");
+        request.setJobImages(mockFile);
+
 
         JobResponse response1 = jobService.postJobs(request);
 
@@ -128,6 +159,9 @@ class JobServiceImplTest {
         JobRequest request1 = new JobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
+        request1.setJobImages(mockFile);
+
+
         JobResponse response1 = jobService.postJobs(request1);
         ChangeJobStatusRequest request = new ChangeJobStatusRequest();
         request.setJobId(response1.getJob().getId());
@@ -143,6 +177,8 @@ class JobServiceImplTest {
         JobRequest request1 = new JobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
+        request1.setJobImages(mockFile);
+
         JobResponse response1 = jobService.postJobs(request1);
 
         NegotiatedPaymentRequest request = new NegotiatedPaymentRequest();
@@ -163,12 +199,15 @@ class JobServiceImplTest {
         request1.setJobType("plumbing");
         request1.setTitle("lum");
         request1.setEmployerId("12");
+        request1.setJobImages(mockFile);
+
 
         JobResponse response1 = jobService.postJobs(request1);
 
         TakeJobRequest request3 = new TakeJobRequest();
         request3.setJobId(response1.getJob().getId());
         request3.setJobSeekerId("123");
+
         JobResponse response3 = jobService.takeJob(request3);
 
         ChangeJobStatusRequest request2 = new ChangeJobStatusRequest();
@@ -192,6 +231,8 @@ class JobServiceImplTest {
         request1.setJobType("plumbing");
         request1.setTitle("lum");
         request1.setEmployerId("1");
+        request1.setJobImages(mockFile);
+
         JobResponse response1 = jobService.postJobs(request1);
         ChangeJobStatusRequest request2 = new ChangeJobStatusRequest();
         request2.setJobId(response1.getJob().getId());
@@ -216,6 +257,8 @@ class JobServiceImplTest {
         JobRequest request1 = new JobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
+        request1.setJobImages(mockFile);
+
 
 
         JobResponse response1 = jobService.postJobs(request1);

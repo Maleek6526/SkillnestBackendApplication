@@ -2,7 +2,6 @@ package com.skillnest.jobservice.service;
 
 import com.skillnest.jobSeekerService.data.model.JobSeeker;
 import com.skillnest.jobSeekerService.data.repository.JobSeekerRepository;
-import com.skillnest.jobSeekerService.dtos.UserDto;
 import com.skillnest.jobSeekerService.dtos.request.RegisterJobSeekerRequest;
 import com.skillnest.jobSeekerService.dtos.response.RegisterJobSeekerResponse;
 import com.skillnest.jobSeekerService.mapper.JobSeekerMapper;

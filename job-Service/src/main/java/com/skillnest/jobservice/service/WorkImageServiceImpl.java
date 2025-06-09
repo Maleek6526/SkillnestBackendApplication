@@ -40,9 +40,11 @@ public class WorkImageServiceImpl implements WorkImageService {
                     .build();
 
             workImageRepository.save(workImage);
+            log.error("image not uploaded: {}", cloudUrl);
             log.info("Image uploaded: {}", cloudUrl);
             return WorkImageMapper.mapToUploadImagesResponse("Image uploaded successfully", workImage);
         } catch (IOException e) {
+            log.error(e.getMessage());
             log.error("Error uploading image: {}", e.getMessage());
             throw new NoImageSelectedException("Error uploading image");
         }

@@ -17,7 +17,6 @@ public class JobMapper {
                 .jobType(jobRequest.getJobType())
                 .deadline(jobRequest.getDeadline())
                 .title(jobRequest.getTitle())
-                .workImage(jobRequest.getWorkImage())
                 .employerId(jobRequest.getEmployerId())
                 .description(jobRequest.getDescription())
                 .contactInfo(jobRequest.getContactInfo())
@@ -40,7 +39,6 @@ public class JobMapper {
         job.setRequiredSkills(jobRequest.getRequiredSkills());
         job.setProposedPayment(jobRequest.getProposedPayment());
         job.setStatus(jobRequest.getStatus());
-        job.setWorkImage((WorkImage) jobRequest.getWorkImage());
         job.setDeadline(jobRequest.getDeadline());
         job.setLastUpdatedDate(LocalDateTime.now());
         job.setContactInfo(jobRequest.getContactInfo());
