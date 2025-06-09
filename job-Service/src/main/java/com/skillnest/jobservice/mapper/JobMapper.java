@@ -2,6 +2,7 @@ package com.skillnest.jobservice.mapper;
 
 
 import com.skillnest.jobservice.data.model.Job;
+import com.skillnest.jobservice.data.model.WorkImage;
 import com.skillnest.jobservice.dtos.request.JobRequest;
 import com.skillnest.jobservice.dtos.request.UpdateJobRequest;
 import com.skillnest.jobservice.dtos.response.JobResponse;
