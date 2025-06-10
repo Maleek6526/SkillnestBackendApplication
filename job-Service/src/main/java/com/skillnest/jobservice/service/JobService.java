@@ -3,6 +3,7 @@ package com.skillnest.jobservice.service;
 
 import com.skillnest.jobservice.dtos.request.*;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface JobService {
 
     JobResponse getJobById(String id);
 
-    JobResponse takeJob(TakeJobRequest jobRequest);
+    TakeJobResponse takeJob(TakeJobRequest jobRequest);
 
     JobResponse updateJob(UpdateJobRequest jobRequest);
 

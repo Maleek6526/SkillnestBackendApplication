@@ -16,7 +16,7 @@ public class JobSeekerController {
 
     private final JobSeekerService jobSeekerService;
     @PostMapping("complete-profile")
-    public ResponseEntity<RegisterJobSeekerResponse> completeProfile(@RequestBody RegisterJobSeekerRequest request){
+    public ResponseEntity<RegisterJobSeekerResponse> completeProfile(@ModelAttribute RegisterJobSeekerRequest request){
         return ResponseEntity.ok(jobSeekerService.completeProfile(request));
     }
     @PostMapping("update-profile")

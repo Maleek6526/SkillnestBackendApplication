@@ -1,21 +1,29 @@
 package com.skillnest.jobservice.controller;
 
+import com.skillnest.jobservice.data.model.Job;
+import com.skillnest.jobservice.data.repository.JobRepository;
+import com.skillnest.jobservice.dtos.JobDTO;
 import com.skillnest.jobservice.dtos.request.*;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 import com.skillnest.jobservice.service.JobService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
+@Slf4j
 @RequestMapping("job-service")
 @RequiredArgsConstructor
 public class JobController {
     private final JobService jobService;
+    private final JobRepository jobRepository;
 
     @PostMapping("post-jobs")
     public ResponseEntity<JobResponse> postJob(@ModelAttribute JobRequest jobRequest) {
@@ -30,14 +38,21 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<JobResponse> getJobById(@PathVariable String id) {
+    public ResponseEntity<JobDTO> getJobById(@PathVariable("id") String id) {
         JobResponse response = jobService.getJobById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        Optional<Job> existingJob = jobRepository.findById(response.getJob().getId());
+        if(existingJob.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        Job job = existingJob.get();
+        JobDTO dto = new JobDTO();
+        dto.setId(job.getId());
+        return ResponseEntity.ok(dto);
     }
 
     @PatchMapping("/take")
-    public ResponseEntity<JobResponse> takeJob(@RequestBody TakeJobRequest takeJobRequest) {
-        JobResponse response = jobService.takeJob(takeJobRequest);
+    public ResponseEntity<TakeJobResponse> takeJob(@RequestBody TakeJobRequest takeJobRequest) {
+        TakeJobResponse response = jobService.takeJob(takeJobRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

@@ -3,6 +3,7 @@ package com.skillnest.jobSeekerService.mapper;
 import com.skillnest.jobSeekerService.data.model.AvailabilitySlot;
 import com.skillnest.jobSeekerService.data.model.JobSeeker;
 import com.skillnest.jobSeekerService.data.model.VerificationDocument;
+import com.skillnest.jobSeekerService.dtos.JobDTO;
 import com.skillnest.jobSeekerService.dtos.UserDto;
 import com.skillnest.jobSeekerService.dtos.request.*;
 import com.skillnest.jobSeekerService.dtos.response.*;
@@ -18,12 +19,10 @@ public class JobSeekerMapper {
         jobSeeker.setUserId(user.getId());
         jobSeeker.setAvailabilitySlotIds(registerJobSeekerRequest.getAvailabilitySlotIds());
         jobSeeker.setBio(registerJobSeekerRequest.getBio());
-        jobSeeker.setDocumentIds(registerJobSeekerRequest.getDocumentIds());
         jobSeeker.setFullName(registerJobSeekerRequest.getFullName());
-        jobSeeker.setBankAccountId(registerJobSeekerRequest.getBankAccountId());
         jobSeeker.setSkillIds(registerJobSeekerRequest.getSkillIds());
-        jobSeeker.setProfilePictureUrl(registerJobSeekerRequest.getProfilePictureUrl());
-        jobSeeker.setWorkImageIds(registerJobSeekerRequest.getWorkImageIds());
+        jobSeeker.setPhoneNumber(registerJobSeekerRequest.getPhoneNumber());
+        jobSeeker.setLocation(registerJobSeekerRequest.getLocation());
         return jobSeeker;
     }
     public static RegisterJobSeekerResponse mapToRegisterJobSeekerResponse(String message, JobSeeker jobSeeker){
@@ -83,5 +82,19 @@ public class JobSeekerMapper {
         response.setDocument(verificationDocument);
         response.setMessage(message);
         return response;
+    }
+
+    public static TakeJobResponse mapToTakeJobResponse(String message, String jobSeekerId ){
+        TakeJobResponse takeJobResponse = new TakeJobResponse();
+        takeJobResponse.setMessage(message);
+        takeJobResponse.setJobSeekerId(jobSeekerId);
+        return takeJobResponse;
+    }
+
+    public static TakeJobRequest mapToTakeJobRequest(JobDTO job, TakeJobRequest request) {
+        TakeJobRequest takeJobRequest = new TakeJobRequest();
+        takeJobRequest.setJobId(job.getJobId());
+        takeJobRequest.setJobSeekerId(request.getJobSeekerId());
+        return takeJobRequest;
     }
 }

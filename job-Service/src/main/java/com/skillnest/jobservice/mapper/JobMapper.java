@@ -6,6 +6,7 @@ import com.skillnest.jobservice.data.model.WorkImage;
 import com.skillnest.jobservice.dtos.request.JobRequest;
 import com.skillnest.jobservice.dtos.request.UpdateJobRequest;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -42,5 +43,12 @@ public class JobMapper {
         job.setDeadline(jobRequest.getDeadline());
         job.setLastUpdatedDate(LocalDateTime.now());
         job.setContactInfo(jobRequest.getContactInfo());
+    }
+
+    public static TakeJobResponse mapToTakeJobResponse(String jobTakenSuccessfully, String jobSeekerId, String jobId) {
+        TakeJobResponse takeJobResponse = new TakeJobResponse();
+        takeJobResponse.setJobSeekerId(jobSeekerId);
+        takeJobResponse.setMessage(jobTakenSuccessfully);
+        return takeJobResponse;
     }
 }

@@ -21,8 +21,6 @@ public class JobSeeker {
     private boolean isVerified;
     private float rating;
     private List<String> skillIds;
-    private List<String> workImageIds;
     private String availabilitySlotIds;
-    private String bankAccountId;
-    private String documentIds;
+    private String documentUrl;
 }

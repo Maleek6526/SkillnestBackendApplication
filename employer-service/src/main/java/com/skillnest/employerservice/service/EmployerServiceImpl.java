@@ -7,7 +7,4 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class EmployerServiceImpl implements EmployerService {
 
-
-//    @Override
-//    public EmployerResponse
 }

@@ -5,10 +5,12 @@ import com.skillnest.jobservice.data.model.Job;
 import com.skillnest.jobservice.data.repository.JobRepository;
 import com.skillnest.jobservice.dtos.request.*;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 import com.skillnest.jobservice.exception.EmployerNotFoundException;
 import com.skillnest.jobservice.exception.JobNotFoundException;
 import com.skillnest.jobservice.exception.JobNotOpenException;
 import com.skillnest.jobservice.exception.JobSeekerNotFoundException;
+import com.skillnest.jobservice.feign.JobSeekerInterface;
 import com.skillnest.jobservice.mapper.JobMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ public class JobServiceImpl implements JobService {
 
     private final JobRepository jobRepository;
     private final WorkImageService workImageService;
+    private final JobSeekerInterface jobSeekerInterface;
 
     @Override
     public JobResponse postJobs(JobRequest jobRequest){
@@ -44,13 +47,13 @@ public class JobServiceImpl implements JobService {
     @Override
     public JobResponse getJobById(String id){
         Optional<Job> job = jobRepository.findById(id);
-        if(job.isPresent()){
-            return JobMapper.mapToJobResponse("Job retrieved successfully",job.get());
+        if(job.isEmpty()){
+            throw new JobNotFoundException("Job nt found");
         }
-        throw new JobNotFoundException("Job not found");
+        return JobMapper.mapToJobResponse("Job retrieved successfully",job.get());
     }
     @Override
-    public JobResponse takeJob(TakeJobRequest jobRequest){
+    public TakeJobResponse takeJob(TakeJobRequest jobRequest){
         Optional<Job> job = jobRepository.findById(jobRequest.getJobId());
         if(job.isEmpty()){
             throw new JobNotFoundException("Job not found");
@@ -58,12 +61,16 @@ public class JobServiceImpl implements JobService {
         if (job.get().getStatus() != JobStatus.OPEN){
             throw new JobNotOpenException("Job not open");
         }
-        job.get().setJobSeekerId(jobRequest.getJobSeekerId());
+        TakeJobResponse takeJobResponse = jobSeekerInterface.takeJob(jobRequest);
+        if(takeJobResponse.getJobSeekerId() == null){
+            throw new JobSeekerNotFoundException("JobSeeker Not Found");
+        }
+        job.get().setJobSeekerId(takeJobResponse.getJobSeekerId());
         job.get().setStatus(JobStatus.TAKEN);
         job.get().setLastUpdatedDate(LocalDateTime.now());
 
         jobRepository.save(job.get());
-        return  JobMapper.mapToJobResponse("Job taken successfully",job.get());
+        return  JobMapper.mapToTakeJobResponse("Job taken successfully",  takeJobResponse.getJobSeekerId(), job.get().getId());
     }
     @Override
     public JobResponse updateJob(UpdateJobRequest jobRequest){

@@ -1,6 +1,5 @@
-package com.skillnest.jobSeekerService.dtos.response;
+package com.skillnest.jobservice.dtos.response;
 
-import com.skillnest.jobSeekerService.data.model.JobSeeker;
 import lombok.Data;
 
 @Data
