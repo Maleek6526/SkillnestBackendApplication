@@ -3,15 +3,19 @@ package com.skillnest.jobSeekerService.service;
 import com.cloudinary.Cloudinary;
 import com.skillnest.jobSeekerService.data.model.*;
 import com.skillnest.jobSeekerService.data.repository.*;
+import com.skillnest.jobSeekerService.dtos.JobDTO;
 import com.skillnest.jobSeekerService.dtos.UserDto;
 import com.skillnest.jobSeekerService.dtos.request.*;
 import com.skillnest.jobSeekerService.dtos.response.*;
 import com.skillnest.jobSeekerService.exception.JobSeekerNotFoundException;
+import com.skillnest.jobSeekerService.exception.NoAvailabilitySlotException;
 import com.skillnest.jobSeekerService.exception.NoDocumentFoundException;
 import com.skillnest.jobSeekerService.exception.NoImageFoundException;
+import com.skillnest.jobSeekerService.feign.JobInterface;
 import com.skillnest.jobSeekerService.feign.JobSeekerInterface;
 import com.skillnest.jobSeekerService.mapper.JobSeekerMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,12 +28,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JobSeekerServiceImpl implements JobSeekerService{
 
-    private JobSeekerInterface jobSeekerInterface;
-
-    private static final String JOB_SERVICE_BASE_URL = "http://localhost:8070/job-service";
-    private final RestTemplate restTemplate;
+    private final JobSeekerInterface jobSeekerInterface;
+    private final JobInterface jobInterface;
     private final JobSeekerRepository jobSeekerRepository;
     private final Cloudinary cloudinary;
     private final VerificationDocumentRepository verificationDocumentRepository;
@@ -43,9 +46,52 @@ public class JobSeekerServiceImpl implements JobSeekerService{
             throw new JobSeekerNotFoundException("Job seeker not found");
         }
         JobSeeker jobSeeker = JobSeekerMapper.mapToRegisterJobSeeker(user, registerJobSeekerRequest);
+
+        try {
+            String uploadedProfileUrl = cloudinary
+                    .uploader()
+                    .upload(registerJobSeekerRequest.getProfilePictureUrl().getBytes(),
+                            Map.of("public_id", UUID.randomUUID().toString(), "resource_type", "auto"))
+                    .get("secure_url")
+                    .toString();
+            String uploadDocuments = cloudinary
+                    .uploader()
+                    .upload(registerJobSeekerRequest.getDocumentUrl().getBytes(),
+                            Map.of("public_id", UUID.randomUUID().toString(), "resource_type", "auto"))
+                    .get("secure_url")
+                    .toString();
+            String uploadResume = cloudinary
+                    .uploader()
+                    .upload(registerJobSeekerRequest.getResumeUrl().getBytes(),
+                            Map.of("public_id", UUID.randomUUID().toString(), "resource_type", "auto"))
+                    .get("secure_url")
+                    .toString();
+
+            jobSeeker.setResumeUrl(uploadResume);
+            jobSeeker.setDocumentUrl(uploadDocuments);
+            jobSeeker.setProfilePictureUrl(uploadedProfileUrl);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload profile picture", e);
+        }
         jobSeekerRepository.save(jobSeeker);
 
         return JobSeekerMapper.mapToRegisterJobSeekerResponse("Job seeker registered successfully", jobSeeker);
+    }
+    @Override
+    public TakeJobResponse takeJob(TakeJobRequest request) {
+        ResponseEntity<JobDTO> response = jobInterface.getJobById(request.getJobId());
+        JobDTO job = response.getBody();
+        if(job == null){
+            throw new JobSeekerNotFoundException("Job  not found");
+        }
+        TakeJobRequest takeJobRequest = JobSeekerMapper.mapToTakeJobRequest(job, request);
+
+        Optional<JobSeeker> existingJobSeeker = jobSeekerRepository.findById(request.getJobSeekerId());
+        if (existingJobSeeker.isEmpty()) {
+            throw new JobSeekerNotFoundException("Job seeker not found");
+        }
+        JobSeeker jobSeeker = existingJobSeeker.get();
+         return JobSeekerMapper.mapToTakeJobResponse("Job successfully taken by JobSeeker", jobSeeker.getId());
     }
 
     @Override
@@ -82,7 +128,7 @@ public class JobSeekerServiceImpl implements JobSeekerService{
 
         Optional<AvailabilitySlot> existingSlot = availabilitySlotRepository.findById(jobSeeker.getAvailabilitySlotIds());
         if(existingSlot.isEmpty()){
-            throw new NoImageFoundException("No image found");
+                throw new NoAvailabilitySlotException("No image found");
         }
         return JobSeekerMapper.mapToAvailabilitySlotResponse("Availability has been set successfully", existingSlot.get());
     }
@@ -94,7 +140,7 @@ public class JobSeekerServiceImpl implements JobSeekerService{
             throw new JobSeekerNotFoundException("Job seeker not found");
         }
         JobSeeker jobSeeker = existingJobSeeker.get();
-        Optional<VerificationDocument> documents = verificationDocumentRepository.findById(jobSeeker.getDocumentIds());
+        Optional<VerificationDocument> documents = verificationDocumentRepository.findByJobSeekerId(jobSeekerId);
         if (documents.isEmpty()) {
             throw new NoDocumentFoundException("No documents found for this job seeker");
         }
@@ -109,7 +155,7 @@ public class JobSeekerServiceImpl implements JobSeekerService{
             throw new JobSeekerNotFoundException("Job seeker not found");
         }
         JobSeeker jobSeeker = existingJobSeeker.get();
-        List<AvailabilitySlot> existingSlot = availabilitySlotRepository.findAllById(jobSeeker.getWorkImageIds());
+        Optional<AvailabilitySlot> existingSlot = availabilitySlotRepository.findById(jobSeeker.getId());
         if(existingSlot.isEmpty()){
             throw new NoImageFoundException("No image found");
         }
@@ -141,7 +187,7 @@ public class JobSeekerServiceImpl implements JobSeekerService{
             verificationDocument.setDocumentUrl(uploadedUrl);
             verificationDocumentRepository.save(verificationDocument);
 
-            jobSeeker.setDocumentIds(verificationDocument.getId());
+            jobSeeker.setDocumentUrl(verificationDocument.getDocumentUrl());
             jobSeekerRepository.save(jobSeeker);
 
             return JobSeekerMapper.mapToUploadDocumentResponse("Uploaded successfully", verificationDocument);
@@ -150,38 +196,6 @@ public class JobSeekerServiceImpl implements JobSeekerService{
         }
     }
 
-    @Override
-    public TakeJobResponse takeJob(TakeJobRequest request) {
-        Optional<JobSeeker> existingJobSeeker = jobSeekerRepository.findById(request.getJobSeekerId());
-        if (existingJobSeeker.isEmpty()) {
-            throw new JobSeekerNotFoundException("Job seeker not found");
-        }
-        
-        String jobServiceUrl = JOB_SERVICE_BASE_URL + "/take";
 
-        try {
-            ResponseEntity<String> response = restTemplate.postForEntity(jobServiceUrl, request, String.class);
-
-            if (response.getStatusCode().is2xxSuccessful()) {
-                TakeJobResponse takeJobResponse = new TakeJobResponse();
-                takeJobResponse.setMessage("Job taken successfully by job seeker: " + request.getJobSeekerId());
-                takeJobResponse.setJobId(request.getJobId());
-                takeJobResponse.setJobSeekerId(request.getJobSeekerId());
-                return takeJobResponse;
-            } else {
-                throw new RuntimeException("Failed to take job. Job Service responded with status: " + response.getStatusCode());
-            }
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new RuntimeException("Job not found in Job Service or endpoint invalid.");
-            } else if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
-                throw new RuntimeException("Invalid request to Job Service: " + e.getResponseBodyAsString());
-            } else {
-                throw new RuntimeException("Error communicating with Job Service: " + e.getMessage(), e);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("An unexpected error occurred while trying to take the job: " + e.getMessage(), e);
-        }
-    }
 
 }

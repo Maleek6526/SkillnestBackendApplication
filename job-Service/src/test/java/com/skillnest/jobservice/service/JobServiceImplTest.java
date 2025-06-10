@@ -5,6 +5,7 @@ import com.skillnest.jobservice.data.model.Job;
 import com.skillnest.jobservice.data.repository.JobRepository;
 import com.skillnest.jobservice.dtos.request.*;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 import com.skillnest.jobservice.exception.JobNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -113,10 +114,10 @@ class JobServiceImplTest {
         TakeJobRequest request = new TakeJobRequest();
         request.setJobId(response1.getJob().getId());
         request.setJobSeekerId(response1.getJob().getJobSeekerId());
-        JobResponse response = jobService.takeJob(request);
+        TakeJobResponse response = jobService.takeJob(request);
 
         assertEquals("Job taken successfully", response.getMessage());
-        assertNotNull(jobRepository.findById(response.getJob().getId()));
+        assertNotNull(jobRepository.findById(response.getJobId()));
     }
 
     @Test
@@ -208,7 +209,7 @@ class JobServiceImplTest {
         request3.setJobId(response1.getJob().getId());
         request3.setJobSeekerId("123");
 
-        JobResponse response3 = jobService.takeJob(request3);
+        TakeJobResponse response3 = jobService.takeJob(request3);
 
         ChangeJobStatusRequest request2 = new ChangeJobStatusRequest();
         request2.setJobId(response1.getJob().getId());
@@ -268,7 +269,7 @@ class JobServiceImplTest {
         request3.setJobId(response1.getJob().getId());
         request3.setJobSeekerId("123");
 
-        JobResponse response3 = jobService.takeJob(request3);
+        TakeJobResponse response3 = jobService.takeJob(request3);
         VerifyCompleteJobRequest request = new VerifyCompleteJobRequest();
         request.setJobId(response1.getJob().getId());
         request.setUserId("123");
