@@ -5,6 +5,7 @@ import com.skillnest.jobservice.data.repository.JobRepository;
 import com.skillnest.jobservice.dtos.JobDTO;
 import com.skillnest.jobservice.dtos.request.*;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.PostJobResponse;
 import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 import com.skillnest.jobservice.service.JobService;
 import jakarta.validation.Valid;
@@ -26,8 +27,8 @@ public class JobController {
     private final JobRepository jobRepository;
 
     @PostMapping("post-jobs")
-    public ResponseEntity<JobResponse> postJob(@ModelAttribute JobRequest jobRequest) {
-        JobResponse response = jobService.postJobs(jobRequest);
+    public ResponseEntity<PostJobResponse> postJob(@ModelAttribute PostJobRequest jobRequest) {
+        PostJobResponse response = jobService.postJobs(jobRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

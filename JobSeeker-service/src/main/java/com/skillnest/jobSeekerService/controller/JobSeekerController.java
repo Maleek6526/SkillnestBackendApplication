@@ -20,7 +20,7 @@ public class JobSeekerController {
         return ResponseEntity.ok(jobSeekerService.completeProfile(request));
     }
     @PostMapping("update-profile")
-    public ResponseEntity<UpdateJobSeekerProfileResponse> updateProfile(@RequestBody UpdateJobSeekerProfileRequest request){
+    public ResponseEntity<UpdateJobSeekerProfileResponse> updateProfile(@ModelAttribute UpdateJobSeekerProfileRequest request){
         return ResponseEntity.ok(jobSeekerService.updateProfile(request));
     }
     @GetMapping("/{userId}")

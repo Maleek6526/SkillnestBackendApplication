@@ -3,8 +3,8 @@ package com.skillnest.jobservice.dtos.response;
 import lombok.Data;
 
 @Data
-public class TakeJobResponse {
-    private String jobId;
+public class PostJobResponse {
     private String message;
-    private String jobSeekerId;
+    private String jobId;
+    private String employerId;
 }

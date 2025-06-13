@@ -3,16 +3,19 @@ package com.skillnest.jobservice.mapper;
 
 import com.skillnest.jobservice.data.model.Job;
 import com.skillnest.jobservice.data.model.WorkImage;
+import com.skillnest.jobservice.dtos.JobDTO;
 import com.skillnest.jobservice.dtos.request.JobRequest;
+import com.skillnest.jobservice.dtos.request.PostJobRequest;
 import com.skillnest.jobservice.dtos.request.UpdateJobRequest;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.PostJobResponse;
 import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class JobMapper {
-    public static Job mapToJob(JobRequest jobRequest){
+    public static Job mapToJob(PostJobRequest jobRequest){
         return Job.builder()
                 .id(UUID.randomUUID().toString())
                 .jobType(jobRequest.getJobType())
@@ -47,8 +50,16 @@ public class JobMapper {
 
     public static TakeJobResponse mapToTakeJobResponse(String jobTakenSuccessfully, String jobSeekerId, String jobId) {
         TakeJobResponse takeJobResponse = new TakeJobResponse();
+        takeJobResponse.setJobId(jobId);
         takeJobResponse.setJobSeekerId(jobSeekerId);
         takeJobResponse.setMessage(jobTakenSuccessfully);
         return takeJobResponse;
+    }
+    public static PostJobResponse mapToPostJobResponse(String jobPosted, String id, String jobId) {
+        PostJobResponse postJobResponse = new PostJobResponse();
+        postJobResponse.setJobId(jobId);
+        postJobResponse.setEmployerId(id);
+        postJobResponse.setMessage(jobPosted);
+        return postJobResponse;
     }
 }

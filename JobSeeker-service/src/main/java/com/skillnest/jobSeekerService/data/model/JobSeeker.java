@@ -13,7 +13,6 @@ public class JobSeeker {
     private String id;
     private String location;
     private String resumeUrl;
-    private String userId;
     private String fullName;
     private String phoneNumber;
     private String profilePictureUrl;

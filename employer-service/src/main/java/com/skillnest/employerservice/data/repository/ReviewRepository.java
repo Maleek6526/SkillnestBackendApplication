@@ -1,4 +1,9 @@
 package com.skillnest.employerservice.data.repository;
 
-public interface ReviewRepository {
+import com.skillnest.employerservice.data.model.Review;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ReviewRepository extends MongoRepository<Review, String> {
 }

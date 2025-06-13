@@ -5,6 +5,7 @@ import com.skillnest.jobservice.data.model.Job;
 import com.skillnest.jobservice.data.repository.JobRepository;
 import com.skillnest.jobservice.dtos.request.*;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.PostJobResponse;
 import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 import com.skillnest.jobservice.exception.JobNotFoundException;
 import org.junit.jupiter.api.AfterEach;
@@ -48,32 +49,32 @@ class JobServiceImplTest {
     }
     @Test
     void postJobs_shouldSaveAndReturnJobResponse() {
-        JobRequest request = new JobRequest();
+        PostJobRequest request = new PostJobRequest();
         request.setJobType("plumbing");
         request.setTitle("lum");
         request.setJobImages(mockFile);
 
-        JobResponse response = jobService.postJobs(request);
+        PostJobResponse response = jobService.postJobs(request);
         assertNotNull(response);
         assertEquals("Job Posted successfully", response.getMessage());
     }
 
     @Test
     void getAllJobs_shouldReturnListOfJobResponses() {
-        JobRequest request = new JobRequest();
+        PostJobRequest request = new PostJobRequest();
         request.setJobType("plumbing");
         request.setTitle("lum");
         request.setJobImages(mockFile);
 
 
-        JobRequest request2 = new JobRequest();
+        PostJobRequest request2 = new PostJobRequest();
         request2.setJobType("plumbing");
         request2.setTitle("lum1");
         request2.setJobImages(mockFile);
 
 
-        JobResponse response2 = jobService.postJobs(request2);
-        JobResponse response = jobService.postJobs(request);
+        PostJobResponse response2 = jobService.postJobs(request2);
+        PostJobResponse response = jobService.postJobs(request);
 
         List<JobResponse> responses = jobService.getAllJobs();
 
@@ -84,14 +85,14 @@ class JobServiceImplTest {
 
     @Test
     void getJobById_shouldReturnJobResponse() {
-        JobRequest request = new JobRequest();
+        PostJobRequest request = new PostJobRequest();
         request.setJobType("plumbing");
         request.setTitle("lum");
         request.setJobImages(mockFile);
 
 
-        JobResponse response = jobService.postJobs(request);
-        JobResponse response2 = jobService.getJobById(response.getJob().getId());
+        PostJobResponse response = jobService.postJobs(request);
+        JobResponse response2 = jobService.getJobById(response.getJobId());
 
         assertNotNull(response);
         assertNotNull(response2);
@@ -104,16 +105,16 @@ class JobServiceImplTest {
 
     @Test
     void takeJob_shouldUpdateAndReturnJobResponse() {
-        JobRequest request2 = new JobRequest();
+        PostJobRequest request2 = new PostJobRequest();
         request2.setJobType("plumbing");
         request2.setTitle("lum");
         request2.setJobImages(mockFile);
 
 
-        JobResponse response1 = jobService.postJobs(request2);
+        PostJobResponse response1 = jobService.postJobs(request2);
         TakeJobRequest request = new TakeJobRequest();
-        request.setJobId(response1.getJob().getId());
-        request.setJobSeekerId(response1.getJob().getJobSeekerId());
+        request.setJobId(response1.getJobId());
+        request.setJobSeekerId(response1.getJobId());
         TakeJobResponse response = jobService.takeJob(request);
 
         assertEquals("Job taken successfully", response.getMessage());
@@ -122,16 +123,16 @@ class JobServiceImplTest {
 
     @Test
     void updateJob_shouldUpdateJobAndReturnResponse() {
-        JobRequest request1 = new JobRequest();
+        PostJobRequest request1 = new PostJobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
         request1.setJobImages(mockFile);
 
 
-        JobResponse response1 = jobService.postJobs(request1);
+        PostJobResponse response1 = jobService.postJobs(request1);
 
         UpdateJobRequest request = new UpdateJobRequest();
-        request.setJobId(response1.getJob().getId());
+        request.setJobId(response1.getJobId());
         request.setTitle("updated");
         request.setWorkImage(mockFile);
 
@@ -142,30 +143,30 @@ class JobServiceImplTest {
 
     @Test
     void deleteJob_shouldDeleteJob() {
-        JobRequest request = new JobRequest();
+        PostJobRequest request = new PostJobRequest();
         request.setJobType("plumbing");
         request.setTitle("lum");
         request.setJobImages(mockFile);
 
 
-        JobResponse response1 = jobService.postJobs(request);
+        PostJobResponse response1 = jobService.postJobs(request);
 
-        JobResponse response = jobService.deleteJob(response1.getJob().getId());
+        JobResponse response = jobService.deleteJob(response1.getJobId());
 
         assertEquals("Job deleted successfully", response.getMessage());
     }
 
     @Test
     void changeJobStatus_shouldUpdateStatus() {
-        JobRequest request1 = new JobRequest();
+        PostJobRequest request1 = new PostJobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
         request1.setJobImages(mockFile);
 
 
-        JobResponse response1 = jobService.postJobs(request1);
+        PostJobResponse response1 = jobService.postJobs(request1);
         ChangeJobStatusRequest request = new ChangeJobStatusRequest();
-        request.setJobId(response1.getJob().getId());
+        request.setJobId(response1.getJobId());
         request.setStatus(JobStatus.TAKEN);
 
         JobResponse response = jobService.changeJobStatus(request);
@@ -175,15 +176,15 @@ class JobServiceImplTest {
 
     @Test
     void negotiatedPayment_shouldSetPayment() {
-        JobRequest request1 = new JobRequest();
+        PostJobRequest request1 = new PostJobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
         request1.setJobImages(mockFile);
 
-        JobResponse response1 = jobService.postJobs(request1);
+        PostJobResponse response1 = jobService.postJobs(request1);
 
         NegotiatedPaymentRequest request = new NegotiatedPaymentRequest();
-        request.setJobId(response1.getJob().getId());
+        request.setJobId(response1.getJobId());
         request.setNegotiatedPaymentAmount(BigDecimal.valueOf(5000.0));
         JobResponse response = jobService.negotiatedPayment(request);
 
@@ -196,28 +197,28 @@ class JobServiceImplTest {
         job.setJobSeekerId("123");
         jobRepository.save(job);
 
-        JobRequest request1 = new JobRequest();
+        PostJobRequest request1 = new PostJobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
         request1.setEmployerId("12");
         request1.setJobImages(mockFile);
 
 
-        JobResponse response1 = jobService.postJobs(request1);
+        PostJobResponse response1 = jobService.postJobs(request1);
 
         TakeJobRequest request3 = new TakeJobRequest();
-        request3.setJobId(response1.getJob().getId());
+        request3.setJobId(response1.getJobId());
         request3.setJobSeekerId("123");
 
         TakeJobResponse response3 = jobService.takeJob(request3);
 
         ChangeJobStatusRequest request2 = new ChangeJobStatusRequest();
-        request2.setJobId(response1.getJob().getId());
+        request2.setJobId(response1.getJobId());
         request2.setStatus(JobStatus.TAKEN);
 
         JobResponse response = jobService.changeJobStatus(request2);
         CompleteJobRequest request = new CompleteJobRequest();
-        request.setJobId(response1.getJob().getId());
+        request.setJobId(response1.getJobId());
         request.setUserId("123");
         request.setJobSeeker(true);
 
@@ -228,22 +229,22 @@ class JobServiceImplTest {
 
     @Test
     void completeJob_shouldCompleteByEmployer() {
-        JobRequest request1 = new JobRequest();
+        PostJobRequest request1 = new PostJobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
         request1.setEmployerId("1");
         request1.setJobImages(mockFile);
 
-        JobResponse response1 = jobService.postJobs(request1);
+        PostJobResponse response1 = jobService.postJobs(request1);
         ChangeJobStatusRequest request2 = new ChangeJobStatusRequest();
-        request2.setJobId(response1.getJob().getId());
+        request2.setJobId(response1.getJobId());
         request2.setStatus(JobStatus.TAKEN);
 
         JobResponse response12 = jobService.changeJobStatus(request2);
 
         CompleteJobRequest request = new CompleteJobRequest();
         request.setUserId("1");
-        request.setJobId(response1.getJob().getId());
+        request.setJobId(response1.getJobId());
         request.setJobSeeker(false);
         JobResponse response = jobService.completeJob(request);
 
@@ -255,23 +256,23 @@ class JobServiceImplTest {
         Job job = new Job();
         job.setJobSeekerId("123");
         jobRepository.save(job);
-        JobRequest request1 = new JobRequest();
+        PostJobRequest request1 = new PostJobRequest();
         request1.setJobType("plumbing");
         request1.setTitle("lum");
         request1.setJobImages(mockFile);
 
 
 
-        JobResponse response1 = jobService.postJobs(request1);
+        PostJobResponse response1 = jobService.postJobs(request1);
 
 
         TakeJobRequest request3 = new TakeJobRequest();
-        request3.setJobId(response1.getJob().getId());
+        request3.setJobId(response1.getJobId());
         request3.setJobSeekerId("123");
 
         TakeJobResponse response3 = jobService.takeJob(request3);
         VerifyCompleteJobRequest request = new VerifyCompleteJobRequest();
-        request.setJobId(response1.getJob().getId());
+        request.setJobId(response1.getJobId());
         request.setUserId("123");
         request.setJobSeeker(true);
         JobResponse response = jobService.verifyCompletion(request);

@@ -15,8 +15,7 @@ public class JobSeekerMapper {
 
     public static JobSeeker mapToRegisterJobSeeker(UserDto user, RegisterJobSeekerRequest registerJobSeekerRequest){
         JobSeeker jobSeeker = new JobSeeker();
-        jobSeeker.setId(UUID.randomUUID().toString());
-        jobSeeker.setUserId(user.getId());
+        jobSeeker.setId(user.getId());
         jobSeeker.setAvailabilitySlotIds(registerJobSeekerRequest.getAvailabilitySlotIds());
         jobSeeker.setBio(registerJobSeekerRequest.getBio());
         jobSeeker.setFullName(registerJobSeekerRequest.getFullName());
@@ -33,11 +32,10 @@ public class JobSeekerMapper {
     }
 
     public static void mapToUpdateJobSeekerProfile(JobSeeker jobSeeker, UpdateJobSeekerProfileRequest request) {
+
         jobSeeker.setFullName(request.getFullName());
         jobSeeker.setLocation(request.getLocation());
         jobSeeker.setPhoneNumber(request.getPhoneNumber());
-        jobSeeker.setProfilePictureUrl(request.getProfilePictureUrl());
-        jobSeeker.setResumeUrl(request.getResumeUrl());
     }
     public static UpdateJobSeekerProfileResponse mapToUpdateJobSeekerProfileResponse(String message, JobSeeker jobSeeker){
         UpdateJobSeekerProfileResponse response = new UpdateJobSeekerProfileResponse();
