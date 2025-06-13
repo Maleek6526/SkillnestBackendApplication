@@ -5,6 +5,7 @@ import com.skillnest.jobservice.data.model.Job;
 import com.skillnest.jobservice.data.repository.JobRepository;
 import com.skillnest.jobservice.dtos.request.*;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.PostJobResponse;
 import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 import com.skillnest.jobservice.exception.EmployerNotFoundException;
 import com.skillnest.jobservice.exception.JobNotFoundException;
@@ -29,13 +30,13 @@ public class JobServiceImpl implements JobService {
     private final JobSeekerInterface jobSeekerInterface;
 
     @Override
-    public JobResponse postJobs(JobRequest jobRequest){
+    public PostJobResponse postJobs(PostJobRequest jobRequest){
         Job job = JobMapper.mapToJob(jobRequest);
         job.setStatus(JobStatus.OPEN);
         job.setPostedDate(LocalDateTime.now());
         job.setWorkImage(workImageService.uploadImage(jobRequest.getJobImages()).getWorkImage());
         jobRepository.save(job);
-        return JobMapper.mapToJobResponse("Job Posted successfully",job);
+        return JobMapper.mapToPostJobResponse("Job Posted successfully",job.getEmployerId(), job.getId());
     }
     @Override
     public List<JobResponse> getAllJobs(){

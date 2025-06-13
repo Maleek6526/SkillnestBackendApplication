@@ -16,11 +16,8 @@ import com.skillnest.jobSeekerService.feign.JobSeekerInterface;
 import com.skillnest.jobSeekerService.mapper.JobSeekerMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.util.*;
@@ -84,7 +81,7 @@ public class JobSeekerServiceImpl implements JobSeekerService{
         if(job == null){
             throw new JobSeekerNotFoundException("Job  not found");
         }
-        TakeJobRequest takeJobRequest = JobSeekerMapper.mapToTakeJobRequest(job, request);
+        JobSeekerMapper.mapToTakeJobRequest(job, request);
 
         Optional<JobSeeker> existingJobSeeker = jobSeekerRepository.findById(request.getJobSeekerId());
         if (existingJobSeeker.isEmpty()) {
@@ -96,19 +93,57 @@ public class JobSeekerServiceImpl implements JobSeekerService{
 
     @Override
     public UpdateJobSeekerProfileResponse updateProfile(UpdateJobSeekerProfileRequest request) {
-        Optional<JobSeeker> existingJobSeeker = jobSeekerRepository.findByUserId(request.getUserId());
-        if (existingJobSeeker.isEmpty()){
+        Optional<JobSeeker> existingJobSeeker = jobSeekerRepository.findById(request.getUserId());
+        if (existingJobSeeker.isEmpty()) {
             throw new JobSeekerNotFoundException("Job seeker not found");
         }
+
         JobSeeker jobSeeker = existingJobSeeker.get();
         JobSeekerMapper.mapToUpdateJobSeekerProfile(jobSeeker, request);
+
+        try {
+            if (request.getProfilePicture() != null && !request.getProfilePicture().isEmpty()) {
+                String uploadedProfileUrl = cloudinary
+                        .uploader()
+                        .upload(request.getProfilePicture().getBytes(),
+                                Map.of("public_id", UUID.randomUUID().toString(), "resource_type", "auto"))
+                        .get("secure_url")
+                        .toString();
+                jobSeeker.setProfilePictureUrl(uploadedProfileUrl);
+            }
+
+            if (request.getDocument() != null && !request.getDocument().isEmpty()) {
+                String uploadDocuments = cloudinary
+                        .uploader()
+                        .upload(request.getDocument().getBytes(),
+                                Map.of("public_id", UUID.randomUUID().toString(), "resource_type", "auto"))
+                        .get("secure_url")
+                        .toString();
+                jobSeeker.setDocumentUrl(uploadDocuments);
+            }
+
+            if (request.getResume() != null && !request.getResume().isEmpty()) {
+                String uploadResume = cloudinary
+                        .uploader()
+                        .upload(request.getResume().getBytes(),
+                                Map.of("public_id", UUID.randomUUID().toString(), "resource_type", "auto"))
+                        .get("secure_url")
+                        .toString();
+                jobSeeker.setResumeUrl(uploadResume);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload file", e);
+        }
+
         jobSeekerRepository.save(jobSeeker);
         return JobSeekerMapper.mapToUpdateJobSeekerProfileResponse("Job seeker updated Successfully", jobSeeker);
     }
 
+
     @Override
     public UpdateJobSeekerProfileResponse getProfile(String userid) {
-        Optional<JobSeeker> existingJobSeeker = jobSeekerRepository.findByUserId(userid);
+        Optional<JobSeeker> existingJobSeeker = jobSeekerRepository.findById(userid);
         if (existingJobSeeker.isEmpty()){
             throw new JobSeekerNotFoundException("Job seeker not found");
         }
@@ -139,7 +174,6 @@ public class JobSeekerServiceImpl implements JobSeekerService{
         if(existingJobSeeker.isEmpty()){
             throw new JobSeekerNotFoundException("Job seeker not found");
         }
-        JobSeeker jobSeeker = existingJobSeeker.get();
         Optional<VerificationDocument> documents = verificationDocumentRepository.findByJobSeekerId(jobSeekerId);
         if (documents.isEmpty()) {
             throw new NoDocumentFoundException("No documents found for this job seeker");

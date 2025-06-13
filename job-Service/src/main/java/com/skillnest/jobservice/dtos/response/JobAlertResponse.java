@@ -13,8 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class JobAlertResponse {
-    private Long id;
-    private Long jobSeekerId;
+    private String jobId;
+    private String jobSeekerId;
     private String alertName;
     private List<String> keywords;
     private String location;

@@ -3,13 +3,14 @@ package com.skillnest.jobservice.service;
 
 import com.skillnest.jobservice.dtos.request.*;
 import com.skillnest.jobservice.dtos.response.JobResponse;
+import com.skillnest.jobservice.dtos.response.PostJobResponse;
 import com.skillnest.jobservice.dtos.response.TakeJobResponse;
 
 import java.util.List;
 
 public interface JobService {
 
-    JobResponse postJobs(JobRequest jobRequest);
+    PostJobResponse postJobs(PostJobRequest jobRequest);
 
     List<JobResponse> getAllJobs();
 

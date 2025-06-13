@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,4 +12,5 @@ import java.time.LocalDateTime;
 public class WorkImageResponse {
    private String message;
    private WorkImage workImage;
+   private String jobId;
 }

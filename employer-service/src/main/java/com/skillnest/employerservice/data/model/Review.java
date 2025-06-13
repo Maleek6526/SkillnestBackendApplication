@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 public class Review {
     private String reviewId;
     private String jobId;
-    private int employerId;
-    private int seekerId;
+    private String employerId;
+    private String seekerId;
     private String comment;
     private double rating;
     private LocalDateTime reviewDate;
