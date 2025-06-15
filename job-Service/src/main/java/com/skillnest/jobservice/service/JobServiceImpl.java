@@ -11,6 +11,7 @@ import com.skillnest.jobservice.exception.EmployerNotFoundException;
 import com.skillnest.jobservice.exception.JobNotFoundException;
 import com.skillnest.jobservice.exception.JobNotOpenException;
 import com.skillnest.jobservice.exception.JobSeekerNotFoundException;
+import com.skillnest.jobservice.feign.EmployerInterface;
 import com.skillnest.jobservice.feign.JobSeekerInterface;
 import com.skillnest.jobservice.mapper.JobMapper;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,16 @@ public class JobServiceImpl implements JobService {
     private final JobRepository jobRepository;
     private final WorkImageService workImageService;
     private final JobSeekerInterface jobSeekerInterface;
+    private final EmployerInterface employerInterface;
 
     @Override
     public PostJobResponse postJobs(PostJobRequest jobRequest){
+
         Job job = JobMapper.mapToJob(jobRequest);
         job.setStatus(JobStatus.OPEN);
         job.setPostedDate(LocalDateTime.now());
+        PostJobResponse postJobResponse = employerInterface.postJob(jobRequest);
+        job.setEmployerId(postJobResponse.getEmployerId());
         job.setWorkImage(workImageService.uploadImage(jobRequest.getJobImages()).getWorkImage());
         jobRepository.save(job);
         return JobMapper.mapToPostJobResponse("Job Posted successfully",job.getEmployerId(), job.getId());
