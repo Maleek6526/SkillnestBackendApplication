@@ -26,13 +26,13 @@ public class JobController {
     private final JobService jobService;
     private final JobRepository jobRepository;
 
-    @PostMapping("post-jobs")
+    @PostMapping("/post-jobs")
     public ResponseEntity<PostJobResponse> postJob(@ModelAttribute PostJobRequest jobRequest) {
         PostJobResponse response = jobService.postJobs(jobRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("get-all-jobs")
+    @GetMapping("/get-all-jobs")
     public ResponseEntity<List<JobResponse>> getAllJobs() {
         List<JobResponse> responses = jobService.getAllJobs();
         return new ResponseEntity<>(responses, HttpStatus.OK);

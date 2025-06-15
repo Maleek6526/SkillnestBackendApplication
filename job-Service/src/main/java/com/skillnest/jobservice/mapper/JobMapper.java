@@ -21,7 +21,6 @@ public class JobMapper {
                 .jobType(jobRequest.getJobType())
                 .deadline(jobRequest.getDeadline())
                 .title(jobRequest.getTitle())
-                .employerId(jobRequest.getEmployerId())
                 .description(jobRequest.getDescription())
                 .contactInfo(jobRequest.getContactInfo())
                 .requiredSkills(jobRequest.getRequiredSkillIds())
