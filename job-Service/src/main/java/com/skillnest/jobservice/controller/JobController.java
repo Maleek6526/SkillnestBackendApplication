@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,4 +93,20 @@ public class JobController {
         JobResponse response = jobService.completeJob(completeJobRequest);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @GetMapping("/find-by-salary")
+    public ResponseEntity<List<Job>> findJobsBySalary(@RequestParam(required = false) BigDecimal minSalary, @RequestParam(required = false) BigDecimal maxSalary) {
+        List<Job> jobs = jobService.findBySalaryRange(minSalary, maxSalary);
+        return ResponseEntity.ok(jobs);
+    }
+    @GetMapping("/find-by-JobType")
+    public ResponseEntity<List<Job>> findJobsByJobType(@RequestParam(required = false) String jobType){
+        List<Job> jobs = jobService.findByJobType(jobType);
+        return ResponseEntity.ok(jobs);
+    }
+    @GetMapping("find-by-location")
+    public ResponseEntity<List<Job>> findByLocation(@RequestParam(required = false) String location){
+        List<Job> jobs = jobService.findByLocation(location);
+        return ResponseEntity.ok(jobs);
+    }
+
 }

@@ -17,6 +17,7 @@ import com.skillnest.jobservice.mapper.JobMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -169,6 +170,27 @@ public class JobServiceImpl implements JobService {
         jobRepository.save(job);
         return JobMapper.mapToJobResponse("Job marked as completed successfully by " + (jobRequest.isJobSeeker() ? "jobseeker" : "employer"), job);
 
+    }
+    @Override
+    public List<Job> findBySalaryRange(BigDecimal min, BigDecimal max){
+        if (min != null && max != null) {
+            return jobRepository.findByProposedPaymentBetween(min, max);
+        } else if (min != null) {
+            return jobRepository.findByProposedPaymentGreaterThanEqual(min);
+        } else if (max != null) {
+            return jobRepository.findByProposedPaymentLessThanEqual(max);
+        } else {
+            return jobRepository.findAll();
+        }
+    }
+    @Override
+    public List<Job> findByJobType(String jobType){
+        return jobRepository.findAllByJobType(jobType);
+    }
+
+    @Override
+    public List<Job> findByLocation(String location){
+        return jobRepository.findAllByLocation(location);
     }
 
     private static void employerCompletion(VerifyCompleteJobRequest jobRequest, Optional<Job> job) {
