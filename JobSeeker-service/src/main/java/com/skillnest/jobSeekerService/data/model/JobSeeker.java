@@ -19,7 +19,7 @@ public class JobSeeker {
     private String bio;
     private boolean isVerified;
     private float rating;
-    private List<String> skillIds;
+    private List<String> skills;
     private String availabilitySlotIds;
     private String documentUrl;
 }

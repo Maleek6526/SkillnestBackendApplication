@@ -23,7 +23,7 @@ public class JobMapper {
                 .title(jobRequest.getTitle())
                 .description(jobRequest.getDescription())
                 .contactInfo(jobRequest.getContactInfo())
-                .requiredSkills(jobRequest.getRequiredSkillIds())
+                .requiredSkills(jobRequest.getRequiredSkills())
                 .proposedPayment(jobRequest.getProposedPayment())
                 .location(jobRequest.getLocation())
                 .build();

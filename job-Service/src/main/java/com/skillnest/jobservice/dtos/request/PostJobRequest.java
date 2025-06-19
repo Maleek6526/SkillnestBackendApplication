@@ -15,7 +15,7 @@ public class PostJobRequest {
     private String employerId;
     private String location;
     private MultipartFile jobImages;
-    private List<String> requiredSkillIds;
+    private List<String> requiredSkills;
     private BigDecimal proposedPayment;
     private String jobType;
 

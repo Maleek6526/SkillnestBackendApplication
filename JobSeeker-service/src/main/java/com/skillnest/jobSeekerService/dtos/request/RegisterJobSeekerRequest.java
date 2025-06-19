@@ -16,7 +16,7 @@ public class RegisterJobSeekerRequest {
     private String phoneNumber;
     private MultipartFile profilePictureUrl;
     private String bio;
-    private List<String> skillIds;
+    private List<String> skills;
     private String availabilitySlotIds;
     private MultipartFile documentUrl;
 }
