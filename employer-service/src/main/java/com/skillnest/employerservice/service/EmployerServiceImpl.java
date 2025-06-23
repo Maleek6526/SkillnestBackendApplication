@@ -65,8 +65,8 @@ public class EmployerServiceImpl implements EmployerService {
     }
     @Override
     public PostJobResponse postJob(PostJobRequest request){
-        ResponseEntity<JobDTO> response = jobInterface.getJobById(request.getJobId());
-        JobDTO job = response.getBody();
+        ResponseEntity<PostJobResponse> response = jobInterface.postJob(request);
+        PostJobResponse job = response.getBody();
         if(job == null){
             throw new EmployerNotFoundException("Job  not found");
         }

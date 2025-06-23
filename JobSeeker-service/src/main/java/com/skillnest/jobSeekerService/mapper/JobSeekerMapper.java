@@ -19,7 +19,7 @@ public class JobSeekerMapper {
         jobSeeker.setAvailabilitySlotIds(registerJobSeekerRequest.getAvailabilitySlotIds());
         jobSeeker.setBio(registerJobSeekerRequest.getBio());
         jobSeeker.setFullName(registerJobSeekerRequest.getFullName());
-        jobSeeker.setSkillIds(registerJobSeekerRequest.getSkillIds());
+        jobSeeker.setSkills(registerJobSeekerRequest.getSkills());
         jobSeeker.setPhoneNumber(registerJobSeekerRequest.getPhoneNumber());
         jobSeeker.setLocation(registerJobSeekerRequest.getLocation());
         return jobSeeker;
@@ -32,7 +32,7 @@ public class JobSeekerMapper {
     }
 
     public static void mapToUpdateJobSeekerProfile(JobSeeker jobSeeker, UpdateJobSeekerProfileRequest request) {
-
+        jobSeeker.setSkills(request.getSkills());
         jobSeeker.setFullName(request.getFullName());
         jobSeeker.setLocation(request.getLocation());
         jobSeeker.setPhoneNumber(request.getPhoneNumber());

@@ -32,7 +32,7 @@ public class EmployerMapper {
         return response;
     }
 
-    public static PostJobRequest mapToPostJobRequest(JobDTO job, PostJobRequest request) {
+    public static PostJobRequest mapToPostJobRequest(PostJobResponse job, PostJobRequest request) {
         PostJobRequest postJobRequest = new PostJobRequest();
         postJobRequest.setEmployerId(request.getEmployerId());
         postJobRequest.setJobId(job.getJobId());
